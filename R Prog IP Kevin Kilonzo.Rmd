@@ -1,0 +1,258 @@
+---
+title: "R Prog IP"
+author: "Kevin Kilonzo"
+date: "23/01/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# R PROGRAMMING: UNIVARIATE AND BIVARIATE ANALYSIS
+## 1- DEFINING THE QUESTION
+  a) Specifying the question
+  Performing EDA on the dataset provided
+  
+  b) Defining the metric for success
+  To be able to perform analysis on the dataset provided
+  
+  c) Understanding the context
+  The IP advertising dataset gives information on the ad clicks of the respondents and whether they click on the ads or not
+  
+  d) Recording the experimental design 
+    1. Defining the question
+    2. Instaling and loading the libraries
+    3. Loading the dataset
+    4. Cleaning the dataset
+    5. Performing univariate analysis
+    6. Performing bivariate analysis
+  
+  e) Data relevance
+    * Daiy time spent on site - Time spent on the site in question daily
+    * Age - Age of the respondents
+    * Area income - Income of the area where the respondent is accessing the site
+    * Daily Internet usage - Time spent using the internet by the respondent daily
+    * Ad topic line - The ad displayed to the respondent
+    * City - the city the respondent is viewing rthe ad
+    * Male - Whether respondent is male or not (1-Male , 0-Female)
+    * Country - Country where the respondent is viewing the ad
+    * Timestamp - Timestamp of the moment of viewing the ad
+    * Clicked on ad - Whether the respondent clicked on the ad or not (1-Clicked, 0-Not clicked)
+    
+## 2- INSTALLING AND LOADING THE LIBRARIES
+```{r}
+ # Installing and loading libraries
+# install.packages("r package",repo="https://github.com/Rdatatable/data.table")
+library("data.table")
+
+# install.packages("tidyverse")
+library("tidyverse")
+# Loading the dataset
+data <- fread("http://bit.ly/IPAdvertisingData")
+```
+
+## 3.LOAD AND CHECK THE DATASET
+```{r}
+# Preview of the dataset
+head(data)
+# Show dataframe
+view(data)
+# Check datatypes
+str(data)
+# Check rows and columns
+dim(data)
+```
+
+The data has 1000 rows and 10 columns
+
+## 4. CLEANING THE DATASET
+```{r}
+# Checking for null values
+# Checking missing values in columns
+colSums(is.na(data))
+
+# Checking for duplicates
+dupli <- data[duplicated(data),]
+dupli
+
+# Checking for outliers
+nums <- select_if(data, is.numeric)
+head(nums)
+boxplot(nums$`Daily Time Spent on Site`)
+boxplot(nums$Age)
+boxplot(nums$`Area Income`)
+boxplot(data$`Daily Internet Usage`)
+```
+
+The data has no missing data and has no duplicates
+The other two remaining numerical columns (Male, Clicked on ad ) are binary so no outliers
+Outliers found in area income are expected as they are on the lower side which is possible with people with low or no incomes 
+
+## 5. UNIVARIATE ANALYSIS
+```{r}
+# Mode function for getting mode
+getmode <- function(v)
+{uniqv <- unique(v)
+uniqv[which.max(tabulate(match(v,uniqv)))]}
+
+# Daily time spent on site colummn
+mean_daily <- mean(nums$`Daily Time Spent on Site`)
+median_daily <- median(nums$`Daily Time Spent on Site`)
+mode_daily <- getmode(nums$`Daily Time Spent on Site`)
+quartile_daily <- quantile(nums$`Daily Time Spent on Site`)
+range_daily <- range(nums$`Daily Time Spent on Site`)
+std_dev_daily <- sd(nums$`Daily Time Spent on Site`)
+hist(nums$`Daily Time Spent on Site`)
+# Print outs
+# mean_daily
+mean_daily
+# median_daily
+median_daily
+# mode_daily
+mode_daily
+# quartile_daily
+quartile_daily
+# range_daily
+range_daily
+# std_dev_daily
+std_dev_daily
+
+
+# Age column
+mean_age <- mean(nums$Age)
+median_age <- median(nums$Age)
+mode_age <- getmode(nums$Age)
+quartile_age <- quantile(nums$Age)
+range_age <- range(nums$Age)
+std_dev_age <- sd(nums$Age)
+hist(nums$Age)
+# Print outs
+# mean_age
+mean_age
+# median_age
+median_age
+# mode_age
+mode_age
+# quartile_age
+quartile_age
+# range_age
+range_age
+# std_dev_age
+std_dev_age
+
+
+# Area income column
+mean_income <- mean(nums$`Area Income`)
+median_income <- median(nums$`Area Income`)
+mode_income <- getmode(nums$`Area Income`)
+quartile_income <- quantile(nums$`Area Income`)
+range_income <- range(nums$`Area Income`)
+std_dev_income <- sd(nums$`Area Income`)
+hist(nums$`Area Income`)
+# Print outs
+# mean_income
+mean_income
+# median_income
+median_income
+# mode_income
+mode_income
+# quartile_income
+quartile_income
+# range_income
+range_income
+# std_dev_income
+std_dev_income
+
+
+
+# Daily internet usage column
+mean_usage <- mean(nums$`Daily Internet Usage`)
+median_usage <- median(nums$`Daily Internet Usage`)
+mode_usage <- getmode(nums$`Daily Internet Usage`)
+quartile_usage <- quantile(nums$`Daily Internet Usage`)
+range_usage <- range(nums$`Daily Internet Usage`)
+std_dev_usage <- sd(nums$`Daily Internet Usage`)
+hist(nums$`Daily Internet Usage`)
+# Print outs
+# mean_usage
+mean_usage
+# median_usage
+median_usage
+# mode_usage
+mode_usage
+# quartile_usage
+quartile_usage
+# range_usage
+range_usage
+# std_dev_usage
+std_dev_usage
+
+# Bar graphs for the binary columns 
+# Assigning cols to variables
+click <- nums$`Clicked on Ad`
+gender <- nums$Male
+
+# Frequency tables
+freq_click <- table(click)
+freq_gender <- table(gender)
+
+# Plotting bar graphs
+# Gender bargraph
+barplot(freq_gender)
+# Ad clicks bar graph
+barplot(freq_click)
+
+# Categorical columns ('ad topic line' , city, country)
+ad_line <- data$`Ad Topic Line`
+city <- data$City
+country <- data$Country
+# Frequency tables
+freq_ad <- table(ad_line)
+freq_city <- table(city)
+freq_country <- table(country)
+
+# Getting top 10 values and bottom 10 values
+sf <- sort(freq_ad , decreasing = T)
+scity <- sort(freq_city, decreasing = T)
+scountry <- sort(freq_country, decreasing = T)
+head(sf, n= 10)
+head(scity, n= 10)
+head(scountry, n= 10)
+tail(scity, n= 10)
+tail(scountry, n= 10)
+```
+* Daily time spent mean = 65.0002, median = 68.215 , mode = 68.215 , IQR (0% =32.6, 25%=51.36, 50%=68.215, 75%=78.5475, 100%=91.43)
+- range 32.60 - 91.43, std dev = 15.85361
+* Age mean = 36 ,median = 35, mode = 31, IQR (0% =19, 25%= 29, 50%= 35, 75%= 42, 100%= 61), range 19-61, std dev = 8.7855
+* Area income mean = 55000, median = 57012.3, mode= 61833.9, IQR(0%=13996.50, 25%= 47031.80, 50%= 57012.30, 75%= 65470.64, 100% =79484.80), range 13996.5 - 79484.8, std dev = 13414.63
+* Daily internet usage mean= 180.0001, median = 183.13, mode= 167.22, IQR(0%= 104.78, 25%= 138.83, 50%= 183.13, 75%= 218.7925, 100%= 269.96), range 104.78 - 269.96, std dev = 43.90243
+* The distribution for daily time spent is bimodal and non normal
+* The distribution for age is skewed to the left but normal
+* The distribution for area income is skewed to the right but normal
+* The distribution of daily internet usage is bimodal and not normal
+* Most people spent 75 - 80 on the site
+* Most people are between the age of 30 and 35
+* Most people earn between 60000 and 65000 in income
+* Most people spent 120-140 minutes on the internet
+* The most common city was Lisamouth and Williamsport
+* The most common countries were Czech Republic and France
+* The are slightly more female than male respondents
+* The respondents who clicked and those who did not click are equal
+* The advertising line was unique to each respondent
+
+## 6. BIVARIATE ANALYSIS
+```{r}
+# Correlation matrix of the numerical colummns
+cor(nums)
+library("corrplot")
+
+corrplot(cor(nums), method = "number")
+```
+
+* Daily time spent on site has a positive correlation with Daily Internet usage and strong negative correlation with Clicked on ad
+* Age has a positive correlation with clicked on ad
+* Area income has a negative correlation with clicked on ad
+* Daily internet usage has a positive correlation with Daily time spent on site and strong negative correlation with clicked on ad
+* Clicked on ad has positive correlation with age, strong negative correlation with Daily time spent on site and Daily internet usage and negative correlation with area income
+
